@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityStandardAssets.CrossPlatformInput;
 
 public class ShipController : MonoBehaviour {
-    public Rigidbody rb;
+    private Rigidbody rb;
     public float paramDivider = 30f;
 
     public float accelerationAxis = 0f;
@@ -43,5 +43,13 @@ public class ShipController : MonoBehaviour {
 
         rb.velocity *= 0.95f;
         rb.angularVelocity *= 0.95f;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Coin"))
+        {
+            other.gameObject.GetComponent<CoinBehavior>().Collect();
+        }
     }
 }
