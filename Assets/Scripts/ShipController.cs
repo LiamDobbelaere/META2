@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class ShipController : MonoBehaviour {
     public Rigidbody rb;
-
+    public float paramDivider = 30f;
 
 	// Use this for initialization
 	void Start () {
@@ -16,7 +16,7 @@ public class ShipController : MonoBehaviour {
 	void Update () {
         rb.AddRelativeForce(new Vector3(0, 0, Input.GetAxis("Vertical") * 50f));
 
-        rb.AddRelativeTorque(new Vector3(Input.GetAxis("Tilt") * 0.3f, Input.GetAxis("Horizontal") * 0.6f, Input.GetAxis("Spin") * 0.2f));
+        rb.AddRelativeTorque(new Vector3(Input.GetAxis("Tilt") * (0.3f / paramDivider), Input.GetAxis("Horizontal") * (0.6f / paramDivider), Input.GetAxis("Spin") * (0.2f / paramDivider)));
 
         rb.velocity *= 0.95f;
         rb.angularVelocity *= 0.95f;
