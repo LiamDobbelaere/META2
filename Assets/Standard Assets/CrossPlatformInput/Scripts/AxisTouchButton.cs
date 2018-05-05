@@ -62,14 +62,16 @@ namespace UnityStandardAssets.CrossPlatformInput
 			{
 				FindPairedButton();
 			}
-			// update the axis and record that the button has been pressed this frame
-			m_Axis.Update(Mathf.MoveTowards(m_Axis.GetValue, axisValue, responseSpeed * Time.deltaTime));
-		}
+            // update the axis and record that the button has been pressed this frame
+            //m_Axis.Update(Mathf.MoveTowards(m_Axis.GetValue, axisValue, responseSpeed * Time.deltaTime));
+            m_Axis.Update(axisValue);
+        }
 
 
 		public void OnPointerUp(PointerEventData data)
 		{
-			m_Axis.Update(Mathf.MoveTowards(m_Axis.GetValue, 0, responseSpeed * Time.deltaTime));
-		}
-	}
+            //m_Axis.Update(Mathf.MoveTowards(m_Axis.GetValue, 0, responseSpeed * Time.deltaTime));
+            m_Axis.Update(0f);
+        }
+    }
 }
