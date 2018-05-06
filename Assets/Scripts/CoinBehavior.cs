@@ -8,7 +8,7 @@ public class CoinBehavior : MonoBehaviour {
     private Rigidbody rb;
 
     private float passedTime = 0f;
-    private SphereCollider collider;
+    private SphereCollider col;
     private bool collected = false;
 
 	// Use this for initialization
@@ -22,8 +22,8 @@ public class CoinBehavior : MonoBehaviour {
         rb.AddForce(new Vector3(Random.Range(-0.25f, 0.25f), Random.Range(-0.25f, 0.25f), Random.Range(-0.25f, 0.25f)), ForceMode.Impulse);
         rb.AddTorque(new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f)), ForceMode.Impulse);
 
-        collider = GetComponent<SphereCollider>();
-        collider.enabled = false;
+        col = GetComponent<SphereCollider>();
+        col.enabled = false;
     }
 	
 	// Update is called once per frame
@@ -32,21 +32,24 @@ public class CoinBehavior : MonoBehaviour {
 
         passedTime += Time.deltaTime;
 
-        if (passedTime > 2f)
+        if (passedTime > 1f)
         {
-            collider.enabled = true;
+            col.enabled = true;
             transform.position = Vector3.MoveTowards(transform.position, player.transform.position, 2f * Time.deltaTime);
         }
 
         if (collected)
         {
             transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, 0.25f);
-            if (transform.localScale.x < 0.01f) Destroy(gameObject);
+            if (transform.localScale.x < 0.01f && !GetComponent<AudioSource>().isPlaying) Destroy(gameObject);
         }
     }
 
-    public void Collect()
+    public void Collect(int consecutiveCoins)
     {
+        GetComponent<AudioSource>().pitch = Mathf.Clamp(.8f + (float)consecutiveCoins / 100f, .8f, 1.3f);
+        
+        GetComponent<AudioSource>().Play();
         collected = true;
     }
 }

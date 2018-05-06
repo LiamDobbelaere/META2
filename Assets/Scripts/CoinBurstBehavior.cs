@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CoinBurstBehavior : MonoBehaviour {
     public GameObject coin;
-
-    private float timePassed = 0f;
+    //private bool bursted = false;
 
 	// Use this for initialization
 	void Start () {
@@ -14,14 +13,19 @@ public class CoinBurstBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        timePassed += Time.deltaTime;
-
-        if (timePassed > 1f)
+        /*if (bursted && !GetComponent<AudioSource>().isPlaying)
         {
-            for (int i = 0; i < 16; i++)
-                Instantiate(coin, transform.position + Random.insideUnitSphere * 0.05f, Quaternion.identity);
-
             Destroy(gameObject);
-        }
+        }*/
 	}
+
+    public void Burst(int coins)
+    {
+        for (int i = 0; i < coins; i++)
+            Instantiate(coin, transform.position + Random.insideUnitSphere * 0.05f, Quaternion.identity);
+
+        //bursted = true;
+        Destroy(gameObject);
+
+    }
 }

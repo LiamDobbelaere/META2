@@ -20,6 +20,10 @@ public class ShipController : MonoBehaviour {
 
     private float t = .1f;
 
+    private int consecutiveCoins = 0;
+    private int lastConsecutiveCoins = 0;
+    private float consecutiveCoinsTimer = 0f;
+
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
@@ -68,13 +72,33 @@ public class ShipController : MonoBehaviour {
 
         rb.velocity *= 0.95f;
         rb.angularVelocity *= 0.95f;
+
+        if (consecutiveCoins == lastConsecutiveCoins)
+        {
+            consecutiveCoinsTimer += Time.deltaTime;
+
+            if (consecutiveCoinsTimer > 2f)
+            {
+                consecutiveCoins = 0;
+            }
+        }
+        else
+        {
+            consecutiveCoinsTimer = 0f;
+        }
+
+        lastConsecutiveCoins = consecutiveCoins;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Coin"))
         {
-            other.gameObject.GetComponent<CoinBehavior>().Collect();
+            consecutiveCoins++;
+            other.gameObject.GetComponent<CoinBehavior>().Collect(consecutiveCoins);
+        } else if (other.CompareTag("RaceCheckpoint"))
+        {
+            other.gameObject.GetComponent<RaceCheckpoint>().Score(other.material.name);
         }
     }
 }
