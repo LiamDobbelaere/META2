@@ -13,7 +13,7 @@ public class CrystalBehavior : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        transform.Rotate(new Vector3(0f, 1f, 0f), Space.World);
+        transform.Rotate(new Vector3(0f, 1f * Time.deltaTime, 0f), Space.World);
 
         if (waitTime > 0f)
         {
@@ -21,7 +21,7 @@ public class CrystalBehavior : MonoBehaviour {
         }
         else
         {
-            float newVal = mat.mainTextureOffset.y + 0.01f;
+            float newVal = mat.mainTextureOffset.y + 0.01f * Time.deltaTime;
 
             if (newVal > 1f)
             {

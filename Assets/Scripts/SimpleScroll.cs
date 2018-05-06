@@ -14,6 +14,6 @@ public class SimpleScroll : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        mat.mainTextureOffset = new Vector2(mat.mainTextureOffset.x, (mat.mainTextureOffset.y + speed) % 1f);
+        mat.mainTextureOffset = new Vector2(mat.mainTextureOffset.x, (mat.mainTextureOffset.y + speed * Time.deltaTime) % 1f);
     }
 }

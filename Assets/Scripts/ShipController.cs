@@ -18,7 +18,7 @@ public class ShipController : MonoBehaviour {
     private float tiltAxisSmooth = 0f;
     private float spinAxisSmooth = 0f;
 
-    private float t = .1f;
+    private float t = 16.66f;
 
     private int consecutiveCoins = 0;
     private int lastConsecutiveCoins = 0;
@@ -61,17 +61,17 @@ public class ShipController : MonoBehaviour {
             spinAxis = Input.GetAxis("Spin");
         }
 
-        accelerationAxisSmooth = Mathf.Lerp(accelerationAxisSmooth, accelerationAxis, t);
-        turningAxisSmooth = Mathf.Lerp(turningAxisSmooth, turningAxis, t);
-        tiltAxisSmooth = Mathf.Lerp(tiltAxisSmooth, tiltAxis, t);
-        spinAxisSmooth = Mathf.Lerp(spinAxisSmooth, spinAxis, t);
+        accelerationAxisSmooth = Mathf.Lerp(accelerationAxisSmooth, accelerationAxis, t * Time.deltaTime);
+        turningAxisSmooth = Mathf.Lerp(turningAxisSmooth, turningAxis, t * Time.deltaTime);
+        tiltAxisSmooth = Mathf.Lerp(tiltAxisSmooth, tiltAxis, t * Time.deltaTime);
+        spinAxisSmooth = Mathf.Lerp(spinAxisSmooth, spinAxis, t * Time.deltaTime);
 
-        rb.AddRelativeForce(new Vector3(0, 0, accelerationAxisSmooth * 50f));
-        rb.AddRelativeTorque(new Vector3(tiltAxisSmooth * (0.3f / paramDivider), 
-            turningAxisSmooth * (0.6f / paramDivider), spinAxisSmooth * (0.2f / paramDivider)));
+        rb.AddRelativeForce(new Vector3(0, 0, accelerationAxisSmooth * (8333.33f * Time.deltaTime)));
+        rb.AddRelativeTorque(new Vector3(tiltAxisSmooth * (50f * Time.deltaTime / paramDivider), 
+            turningAxisSmooth * (100f * Time.deltaTime / paramDivider), spinAxisSmooth * (33.33f * Time.deltaTime / paramDivider)));
 
-        rb.velocity *= 0.95f;
-        rb.angularVelocity *= 0.95f;
+        rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, 8.33f * Time.deltaTime);
+        rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, 8.33f * Time.deltaTime);
 
         if (consecutiveCoins == lastConsecutiveCoins)
         {

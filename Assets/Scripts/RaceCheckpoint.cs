@@ -38,10 +38,12 @@ public class RaceCheckpoint : MonoBehaviour {
 
         if (scoreName.Contains("ScoreHigh"))
         {
+            GetComponent<AudioSource>().pitch = 1f;
             Global.global.CoinBurst(transform.position, 16);
         }
         else if (scoreName.Contains("ScoreNormal"))
         {
+            GetComponent<AudioSource>().pitch = 0.8f;
             Global.global.CoinBurst(transform.position, 8);
         }
 
