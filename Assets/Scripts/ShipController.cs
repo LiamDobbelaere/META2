@@ -5,18 +5,22 @@ using UnityEngine.SceneManagement;
 using UnityStandardAssets.CrossPlatformInput;
 
 public class ShipController : MonoBehaviour {
-    private Rigidbody rb;
     public float paramDivider = 30f;
 
-    public float accelerationAxis = 0f;
-    public float turningAxis = 0f;
-    public float tiltAxis = 0f;
-    public float spinAxis = 0f;
+    private AudioSource flyingSound;
+    private Rigidbody rb;
 
-    private float accelerationAxisSmooth = 0f;
-    private float turningAxisSmooth = 0f;
-    private float tiltAxisSmooth = 0f;
-    private float spinAxisSmooth = 0f;
+    public Color trailColor;
+    public Color boostingTrailColor;
+    public Color ultraBoostingTrailColor;
+
+    private float accelerationAxis, turningAxis, tiltAxis, spinAxis;
+    private float accelerationAxisSmooth, turningAxisSmooth, tiltAxisSmooth, spinAxisSmooth;
+
+    private bool isBoosting = false;
+    private float boostMultiplier;
+    public float boostAmount = 200f;
+    private float boostBuildup = 1f;
 
     private float t = 16.66f;
 
@@ -24,31 +28,29 @@ public class ShipController : MonoBehaviour {
     private int lastConsecutiveCoins = 0;
     private float consecutiveCoinsTimer = 0f;
 
+    private TrailRenderer[] trails;
+
+
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
+        flyingSound = GetComponent<AudioSource>();
+        trails = GetComponentsInChildren<TrailRenderer>(true);
     }
 
 	// Update is called once per frame
 	void Update () {
+        UpdateAxisValues();
+        UpdateShipMovement();
+        UpdateFlyingSound();
+        UpdateConsecutiveCoins();
+    }
+
+    void UpdateAxisValues()
+    {
         if (Application.isMobilePlatform)
         {
-            accelerationAxis = Mathf.Clamp(Input.acceleration.y / 0.2f, -1f, 1f); //Input.GetAxis("Vertical");
-
-            /*turningAxis = 0f;
-            if (Mathf.Abs(Input.acceleration.x) > 0.05f)
-            {
-                turningAxis = Mathf.Clamp(Input.acceleration.x / 0.4f, -1f, 1f); //CrossPlatformInputManager.GetAxis("Horizontal");
-            }*/
-
-            //CrossPlatformInputManager.GetAxis("Horizontal");
-
-
-            /*tiltAxis = 0f;
-            if (Mathf.Abs(Input.acceleration.y) > 0.05f)
-            {
-                tiltAxis = Mathf.Clamp(Input.acceleration.y / 0.4f, -1f, 1f);//CrossPlatformInputManager.GetAxis("Tilt");
-            }*/
+            accelerationAxis = Mathf.Clamp(Input.acceleration.y / 0.2f, -1f, 1f);
             turningAxis = CrossPlatformInputManager.GetAxis("Horizontal");
             tiltAxis = CrossPlatformInputManager.GetAxis("Tilt");
             spinAxis = CrossPlatformInputManager.GetAxis("Spin");
@@ -59,28 +61,85 @@ public class ShipController : MonoBehaviour {
             turningAxis = Input.GetAxis("Horizontal");
             tiltAxis = Input.GetAxis("Tilt");
             spinAxis = Input.GetAxis("Spin");
-        }
 
+            if (!isBoosting && Input.GetButtonDown("Boost"))
+            {
+                isBoosting = true;
+            }
+        }
+    }
+
+    void UpdateShipMovement()
+    {
         accelerationAxisSmooth = Mathf.Lerp(accelerationAxisSmooth, accelerationAxis, t * Time.deltaTime);
         turningAxisSmooth = Mathf.Lerp(turningAxisSmooth, turningAxis, t * Time.deltaTime);
         tiltAxisSmooth = Mathf.Lerp(tiltAxisSmooth, tiltAxis, t * Time.deltaTime);
         spinAxisSmooth = Mathf.Lerp(spinAxisSmooth, spinAxis, t * Time.deltaTime);
 
-        rb.AddRelativeForce(new Vector3(0, 0, accelerationAxisSmooth * (8333.33f * Time.deltaTime)));
-        rb.AddRelativeTorque(new Vector3(tiltAxisSmooth * (50f * Time.deltaTime / paramDivider), 
+        rb.AddRelativeForce(new Vector3(0, 0, accelerationAxisSmooth * (8333.33f * boostMultiplier * Time.deltaTime)));
+        rb.AddRelativeTorque(new Vector3(tiltAxisSmooth * (50f * Time.deltaTime / paramDivider),
             turningAxisSmooth * (100f * Time.deltaTime / paramDivider), spinAxisSmooth * (33.33f * Time.deltaTime / paramDivider)));
 
         rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, 8.33f * Time.deltaTime);
         rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, 8.33f * Time.deltaTime);
 
+        if (isBoosting)
+        {
+            if (boostAmount > 10f)
+            {
+                boostAmount -= Time.deltaTime * 10f;
+                //bool ultraBoost = boostAmount > 100f;
+
+                //if (ultraBoost) boostMultiplier = Mathf.Lerp(boostMultiplier, 3f, boostBuildup * Time.deltaTime);
+                /*else*/ boostMultiplier = Mathf.Lerp(boostMultiplier, 1.5f, boostBuildup * Time.deltaTime);
+
+                for (int i = 0; i < trails.Length; i++)
+                {
+                    /*if (ultraBoost)
+                    {
+                        trails[i].startColor = Color.Lerp(trails[i].startColor, ultraBoostingTrailColor, boostBuildup * Time.deltaTime);
+                        trails[i].endColor = Color.Lerp(trails[i].startColor, ultraBoostingTrailColor, boostBuildup * Time.deltaTime);
+                        trails[i].widthMultiplier = Mathf.Lerp(trails[i].widthMultiplier, 0.03f, boostBuildup * Time.deltaTime);
+                    }
+                    else
+                    {*/
+                        trails[i].startColor = Color.Lerp(trails[i].startColor, boostingTrailColor, boostBuildup * Time.deltaTime);
+                        trails[i].endColor = Color.Lerp(trails[i].startColor, boostingTrailColor, boostBuildup * Time.deltaTime);
+                        trails[i].widthMultiplier = Mathf.Lerp(trails[i].widthMultiplier, 0.02f, boostBuildup * Time.deltaTime);
+                    //}
+                }
+            }
+            else
+            {
+                isBoosting = false;
+            }
+        }
+        else
+        {
+            boostMultiplier = Mathf.Lerp(boostMultiplier, 1f, boostBuildup * Time.deltaTime);
+            for (int i = 0; i < trails.Length; i++)
+            {
+                trails[i].startColor = Color.Lerp(trails[i].startColor, trailColor, boostBuildup * Time.deltaTime);
+                trails[i].endColor = Color.Lerp(trails[i].startColor, trailColor, boostBuildup * Time.deltaTime);
+                trails[i].widthMultiplier = Mathf.Lerp(trails[i].widthMultiplier, 0.01f, boostBuildup * Time.deltaTime);
+            }
+        }
+
+    }
+
+    void UpdateFlyingSound()
+    {
+        flyingSound.volume = rb.velocity.sqrMagnitude;
+        flyingSound.pitch = Mathf.Lerp(flyingSound.pitch, 1f + rb.velocity.sqrMagnitude, 10f * Time.deltaTime);
+    }
+
+    void UpdateConsecutiveCoins()
+    {
         if (consecutiveCoins == lastConsecutiveCoins)
         {
             consecutiveCoinsTimer += Time.deltaTime;
 
-            if (consecutiveCoinsTimer > 2f)
-            {
-                consecutiveCoins = 0;
-            }
+            if (consecutiveCoinsTimer > 2f) consecutiveCoins = 0;
         }
         else
         {
@@ -99,6 +158,7 @@ public class ShipController : MonoBehaviour {
         } else if (other.CompareTag("RaceCheckpoint"))
         {
             other.gameObject.GetComponent<RaceCheckpoint>().Score(other.material.name);
+            boostAmount += 20f;
         }
     }
 }
