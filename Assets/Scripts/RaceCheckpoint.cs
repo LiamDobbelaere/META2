@@ -6,10 +6,12 @@ using UnityEngine.UI;
 public class RaceCheckpoint : MonoBehaviour {
     Image checkpointMark;
     private bool scored = false;
+    private Global global;
 
     // Use this for initialization
     void Start () {
-        checkpointMark = GameObject.FindGameObjectWithTag("CheckpointMark").GetComponent<Image>();
+        global = GameObject.Find("Global").GetComponent<Global>();
+        checkpointMark = global.objectiveMarker.GetComponent<Image>();
     }
 
     // Update is called once per frame

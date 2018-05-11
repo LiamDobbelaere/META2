@@ -6,8 +6,10 @@ TagManager:
   tags:
   - World Mesh
   - Coin
-  - CheckpointMark
   - RaceCheckpoint
+  - ObjectiveMarker
+  - EventMarker
+  - EventInfo
   layers:
   - Default
   - TransparentFX

@@ -30,6 +30,7 @@ public class ShipController : MonoBehaviour {
 
     private TrailRenderer[] trails;
 
+    public float inactivityTime;
 
     // Use this for initialization
     void Start () {
@@ -45,7 +46,7 @@ public class ShipController : MonoBehaviour {
         UpdateFlyingSound();
         UpdateConsecutiveCoins();
     }
-
+    
     void UpdateAxisValues()
     {
         if (Application.isMobilePlatform)
@@ -71,12 +72,14 @@ public class ShipController : MonoBehaviour {
 
     void UpdateShipMovement()
     {
+        if (inactivityTime > 0f) inactivityTime -= Time.deltaTime;
+
         accelerationAxisSmooth = Mathf.Lerp(accelerationAxisSmooth, accelerationAxis, t * Time.deltaTime);
         turningAxisSmooth = Mathf.Lerp(turningAxisSmooth, turningAxis, t * Time.deltaTime);
         tiltAxisSmooth = Mathf.Lerp(tiltAxisSmooth, tiltAxis, t * Time.deltaTime);
         spinAxisSmooth = Mathf.Lerp(spinAxisSmooth, spinAxis, t * Time.deltaTime);
 
-        rb.AddRelativeForce(new Vector3(0, 0, accelerationAxisSmooth * (8333.33f * boostMultiplier * Time.deltaTime)));
+        if (inactivityTime <= 0f) rb.AddRelativeForce(new Vector3(0, 0, accelerationAxisSmooth * (8333.33f * boostMultiplier * Time.deltaTime)));
         rb.AddRelativeTorque(new Vector3(tiltAxisSmooth * (50f * Time.deltaTime / paramDivider),
             turningAxisSmooth * (100f * Time.deltaTime / paramDivider), spinAxisSmooth * (33.33f * Time.deltaTime / paramDivider)));
 
