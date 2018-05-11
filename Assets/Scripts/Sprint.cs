@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Race : MonoBehaviour, IGameEvent {
+public class Sprint : MonoBehaviour, IGameEvent {
     private Global global;
     private Transform checkpoints;
 
-    public int laps = 1;
     public int currentLaps = 0;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         global = GameObject.Find("Global").GetComponent<Global>();
         checkpoints = transform.Find("Checkpoints");
         HideAllCheckpoints();
     }
 
     // Update is called once per frame
-    void Update () {
-		if (currentLaps >= laps)
+    void Update()
+    {
+        if (currentLaps >= 1)
         {
             transform.Find("EventMarker").gameObject.SetActive(true);
             transform.Find("EventMarker").GetComponent<EventMarker>().EventOver();
@@ -27,7 +28,7 @@ public class Race : MonoBehaviour, IGameEvent {
             global.objectiveMarker.GetComponent<Image>().enabled = false;
             currentLaps = 0;
         }
-	}
+    }
 
     public void StartEvent()
     {
@@ -35,7 +36,7 @@ public class Race : MonoBehaviour, IGameEvent {
         HideAllCheckpoints();
 
         GameObject child = checkpoints.GetChild(0).gameObject;
-        child.GetComponent<RaceCheckpoint>().ResetState();
+        child.GetComponent<SprintCheckpoint>().ResetState();
         child.SetActive(true);
 
         currentLaps = 0;
@@ -47,7 +48,7 @@ public class Race : MonoBehaviour, IGameEvent {
         for (int i = 0; i < checkpoints.childCount; i++)
         {
             child = checkpoints.GetChild(i).gameObject;
-            child.GetComponent<RaceCheckpoint>().ResetState();
+            child.GetComponent<SprintCheckpoint>().ResetState();
             child.SetActive(false);
         }
     }
@@ -55,7 +56,7 @@ public class Race : MonoBehaviour, IGameEvent {
     public void AdvanceCheckpoint(int siblingIndex)
     {
         GameObject child = checkpoints.GetChild((siblingIndex + 1) % checkpoints.childCount).gameObject;
-        child.GetComponent<RaceCheckpoint>().ResetState();
+        child.GetComponent<SprintCheckpoint>().ResetState();
         child.SetActive(true);
 
         if (siblingIndex + 1 >= checkpoints.childCount) currentLaps += 1;

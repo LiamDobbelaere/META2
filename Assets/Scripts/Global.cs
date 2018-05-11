@@ -8,9 +8,12 @@ public class Global : MonoBehaviour {
     public GameObject eventInfo;
     public GameObject objectiveMarker;
     public Sprite raceIcon;
+    public Sprite sprintIcon;
     public Sprite nullIcon;
     public Material raceMarkerMaterial;
+    public Material sprintMarkerMaterial;
     public GameObject countdown;
+    public GameObject musicPlayer;
     
 	// Use this for initialization
 	void Start () {

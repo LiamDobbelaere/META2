@@ -11,6 +11,7 @@ TagManager:
   - EventMarker
   - EventInfo
   - MusicPlayer
+  - SprintCheckpoint
   layers:
   - Default
   - TransparentFX

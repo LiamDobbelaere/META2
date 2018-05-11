@@ -5,7 +5,6 @@ using UnityEngine;
 public class MusicPlayer : MonoBehaviour
 {
     private AudioSource audioSource;
-    private bool mustStop = false;
 
     // Use this for initialization
     void Start()
@@ -16,30 +15,19 @@ public class MusicPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (audioSource.isPlaying)
-        {
-            if (!mustStop)
-            {
-                audioSource.volume = Mathf.Lerp(audioSource.volume, 1f, 1f * Time.deltaTime);
-            }
-            else
-            {
-                audioSource.volume = Mathf.Lerp(audioSource.volume, 0f, 1f * Time.deltaTime);
-                if (audioSource.volume < 0.01f) audioSource.Stop();
-            }
-        }
+
     }
 
     public void Play(AudioClip clip)
     {
+        audioSource.Stop();
         audioSource.clip = clip;
-        audioSource.volume = 0f;
+        audioSource.volume = .5f;
         audioSource.Play();
-        mustStop = false;
     }
 
     public void Stop()
     {
-        mustStop = true;
+        audioSource.Stop();
     }
 }

@@ -9,6 +9,7 @@ public class EventMarker : MonoBehaviour {
     private GameObject eventInfo;
 
     public string eventName;
+    public AudioClip eventMusic;
 
     private string type;
 
@@ -19,7 +20,6 @@ public class EventMarker : MonoBehaviour {
         gameEvent = transform.parent.GetComponent<IGameEvent>();
         global = GameObject.Find("Global").GetComponent<Global>();
         eventInfo = global.eventInfo;
-        eventInfo.transform.Find("RaceTitle").GetComponent<Text>().text = eventName;
 
         var image = transform.Find("Canvas").Find("Image").GetComponent<Image>();
         if (transform.parent.GetComponent<Race>() != null)
@@ -28,13 +28,18 @@ public class EventMarker : MonoBehaviour {
             GetComponent<Renderer>().material = global.raceMarkerMaterial;
             type = "Race";
         }
+        else if (transform.parent.GetComponent<Sprint>() != null)
+        {
+            image.sprite = global.sprintIcon;
+            GetComponent<Renderer>().material = global.sprintMarkerMaterial;
+            type = "Sprint";
+        }
         else
         {
             image.sprite = global.nullIcon;
             type = "Unknown";
         }
 
-        eventInfo.transform.Find("RaceType").GetComponent<Text>().text = type;
     }
 
     // Update is called once per frame
@@ -48,13 +53,22 @@ public class EventMarker : MonoBehaviour {
             player.GetComponent<ShipController>().inactivityTime = 3f;
             global.countdown.SetActive(true);
             global.countdown.GetComponent<Countdown>().Reset();
+            isOnMarker = false;
+            global.musicPlayer.GetComponent<MusicPlayer>().Play(eventMusic);
             gameObject.SetActive(false);
             eventInfo.SetActive(false);
         }
     }
 
+    public void EventOver()
+    {
+        global.musicPlayer.GetComponent<MusicPlayer>().Stop();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
+        eventInfo.transform.Find("RaceTitle").GetComponent<Text>().text = eventName;
+        eventInfo.transform.Find("RaceType").GetComponent<Text>().text = type;
         eventInfo.SetActive(true);
         isOnMarker = true;
     }

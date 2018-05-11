@@ -90,7 +90,7 @@ public class ShipController : MonoBehaviour {
         {
             if (boostAmount > 10f)
             {
-                boostAmount -= Time.deltaTime * 10f;
+                boostAmount -= Time.deltaTime * (10f * rb.velocity.sqrMagnitude);
                 //bool ultraBoost = boostAmount > 100f;
 
                 //if (ultraBoost) boostMultiplier = Mathf.Lerp(boostMultiplier, 3f, boostBuildup * Time.deltaTime);
@@ -133,7 +133,7 @@ public class ShipController : MonoBehaviour {
     void UpdateFlyingSound()
     {
         flyingSound.volume = rb.velocity.sqrMagnitude;
-        flyingSound.pitch = Mathf.Lerp(flyingSound.pitch, 1f + rb.velocity.sqrMagnitude, 10f * Time.deltaTime);
+        flyingSound.pitch = Mathf.Lerp(flyingSound.pitch, 1f + rb.velocity.sqrMagnitude + rb.angularVelocity.sqrMagnitude * 0.02f, 10f * Time.deltaTime);
     }
 
     void UpdateConsecutiveCoins()
@@ -161,7 +161,11 @@ public class ShipController : MonoBehaviour {
         } else if (other.CompareTag("RaceCheckpoint"))
         {
             other.gameObject.GetComponent<RaceCheckpoint>().Score(other.material.name);
-            boostAmount += 20f;
+            boostAmount += 5f;
+        } else if (other.CompareTag("SprintCheckpoint"))
+        {
+            other.gameObject.GetComponent<SprintCheckpoint>().Score(other.material.name);
+            boostAmount += 10f;
         }
     }
 }
