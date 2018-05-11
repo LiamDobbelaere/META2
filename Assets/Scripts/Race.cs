@@ -7,6 +7,7 @@ public class Race : MonoBehaviour, IGameEvent {
     private Global global;
     private Transform checkpoints;
 
+    public AudioClip music;
     public int laps = 1;
     public int currentLaps = 0;
 
@@ -23,6 +24,7 @@ public class Race : MonoBehaviour, IGameEvent {
         {
             transform.Find("EventMarker").gameObject.SetActive(true);
             HideAllCheckpoints();
+            GameObject.FindGameObjectWithTag("MusicPlayer").GetComponent<MusicPlayer>().Stop();
             global.objectiveMarker.GetComponent<Image>().enabled = false;
         }
 	}
@@ -34,6 +36,8 @@ public class Race : MonoBehaviour, IGameEvent {
         GameObject child = checkpoints.GetChild(0).gameObject;
         child.GetComponent<RaceCheckpoint>().ResetState();
         child.SetActive(true);
+
+        GameObject.FindGameObjectWithTag("MusicPlayer").GetComponent<MusicPlayer>().Play(music);
 
         currentLaps = 0;
     }
